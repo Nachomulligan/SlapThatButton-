@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class InsectSpawner : MonoBehaviour
 {
     [Header("Prefab References")]
@@ -45,8 +46,13 @@ public class InsectSpawner : MonoBehaviour
             butterflyPool.Enqueue(butterfly);
         }
     }
-
-    public void SpawnInsect(int level, Vector3 spawnPosition, float speed)
+    public void SpawnInsect(
+        int level,
+        Vector3 spawnPosition,
+        float speed,
+        bool walkPausePattern = false,
+        float walkTime = 1f,
+        float pauseTime = 0.5f)
     {
         InsectType typeToSpawn = DetermineInsectType(level);
 
@@ -57,18 +63,23 @@ public class InsectSpawner : MonoBehaviour
             insectObj.SetActive(true);
 
             InsectController insect = insectObj.GetComponent<InsectController>();
-            insect.Initialize(typeToSpawn, speed);
+            insect.Initialize(typeToSpawn, speed, walkPausePattern, walkTime, pauseTime);
 
-            // IF BUTTERFLY, THEN SPAWN MOSQUITO LATER
             if (typeToSpawn == InsectType.Butterfly)
             {
-                float delay = 1.0f; 
-                StartCoroutine(SpawnMosquitoAfterDelay(spawnPosition, speed, delay));
+                float delay = 1.0f;
+                StartCoroutine(SpawnMosquitoAfterDelay(spawnPosition, speed, walkPausePattern, walkTime, pauseTime, delay));
             }
         }
     }
 
-    private IEnumerator SpawnMosquitoAfterDelay(Vector3 spawnPosition, float speed, float delay)
+    private IEnumerator SpawnMosquitoAfterDelay(
+        Vector3 spawnPosition,
+        float speed,
+        bool walkPausePattern,
+        float walkTime,
+        float pauseTime,
+        float delay)
     {
         yield return new WaitForSeconds(delay);
 
@@ -79,9 +90,10 @@ public class InsectSpawner : MonoBehaviour
             mosquitoObj.SetActive(true);
 
             InsectController insect = mosquitoObj.GetComponent<InsectController>();
-            insect.Initialize(InsectType.Mosquito, speed);
+            insect.Initialize(InsectType.Mosquito, speed, walkPausePattern, walkTime, pauseTime);
         }
     }
+
     private InsectType DetermineInsectType(int level)
     {
         if (mustSpawnMosquitoNext)

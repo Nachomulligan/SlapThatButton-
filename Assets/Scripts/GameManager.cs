@@ -126,6 +126,7 @@ public class GameManager : MonoBehaviour
 
         messageText.text = "LOSE!\nSPACE TO RETRY";
         messageText.gameObject.SetActive(true);
+        currentLevel = 1;
     }
 
     public void OnMosquitoMissed()
@@ -135,6 +136,7 @@ public class GameManager : MonoBehaviour
 
         messageText.text = "LOSE!\nSPACE TO RETRY";
         messageText.gameObject.SetActive(true);
+        currentLevel = 1;
     }
 
     private float GetCurrentSpeed()

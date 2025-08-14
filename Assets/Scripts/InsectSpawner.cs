@@ -15,12 +15,13 @@ public class InsectSpawner : MonoBehaviour
     [Range(0f, 1f)] public float walkPauseChance = 0.3f;
     public float walkDuration = 1f;
     public float pauseDuration = 0.5f;
+    public float zigzagAmplitude = 2f;
+    public float zigzagFrequency = 2f;
+    public float randomMoveInterval = 1f;
 
-    // Object Pools
     private Queue<GameObject> mosquitoPool = new Queue<GameObject>();
     private Queue<GameObject> butterflyPool = new Queue<GameObject>();
 
-    // Layer masks 
     [Header("Layers")]
     public LayerMask mosquitoLayer = 8;
     public LayerMask butterflyLayer = 9;
@@ -34,7 +35,6 @@ public class InsectSpawner : MonoBehaviour
 
     private void InitializePools()
     {
-        // Crear pool de mosquitos
         for (int i = 0; i < poolSize; i++)
         {
             GameObject mosquito = Instantiate(mosquitoPrefab);
@@ -43,7 +43,6 @@ public class InsectSpawner : MonoBehaviour
             mosquitoPool.Enqueue(mosquito);
         }
 
-        // Crear pool de mariposas
         for (int i = 0; i < poolSize; i++)
         {
             GameObject butterfly = Instantiate(butterflyPrefab);
@@ -63,13 +62,10 @@ public class InsectSpawner : MonoBehaviour
             insectObj.transform.position = spawnPosition;
             insectObj.SetActive(true);
 
-            // Determinar tipo de movimiento basado en nivel y probabilidad
             IMovementStrategy movementStrategy = DetermineMovementStrategy(level, speed);
-
             InsectController insect = insectObj.GetComponent<InsectController>();
             insect.Initialize(typeToSpawn, movementStrategy);
 
-            // Spawn mosquito después de butterfly (lógica original)
             if (typeToSpawn == InsectType.Butterfly)
             {
                 float delay = 1.0f;
@@ -80,19 +76,31 @@ public class InsectSpawner : MonoBehaviour
 
     private IMovementStrategy DetermineMovementStrategy(int level, float speed)
     {
-        // A partir del nivel 2, introducir movimiento con pausas
-        if (level >= 2 && Random.Range(0f, 1f) < walkPauseChance)
+        float r = Random.value;
+
+        if (level < 2)
+            return new StraightMovement(speed);
+
+        if (level < 5)
         {
-            return new WalkPauseMovement(speed, walkDuration, pauseDuration);
+            if (r < 0.3f) return new WalkPauseMovement(speed, walkDuration, pauseDuration);
+            if (r < 0.6f) return new ZigzagMovement(speed, zigzagAmplitude, zigzagFrequency);
+            return new StraightMovement(speed);
         }
 
-        // Más adelante puedes agregar más estrategias basadas en nivel
-        // if (level >= 5 && Random.Range(0f, 1f) < 0.2f)
-        // {
-        //     return new ZigzagMovement(speed, 2f, 2f);
-        // }
+        if (level < 10)
+        {
+            if (r < 0.25f) return new WalkPauseMovement(speed, walkDuration, pauseDuration);
+            if (r < 0.5f) return new ZigzagMovement(speed, zigzagAmplitude, zigzagFrequency);
+            if (r < 0.75f) return new RandomMovement(speed, randomMoveInterval);
+            return new StraightMovement(speed);
+        }
 
-        return new StraightMovement(speed);
+        // niveles altos → alta variabilidad
+        if (r < 0.25f) return new RandomMovement(speed, randomMoveInterval);
+        if (r < 0.5f) return new ZigzagMovement(speed, zigzagAmplitude, zigzagFrequency);
+        if (r < 0.75f) return new WalkPauseMovement(speed, walkDuration, pauseDuration);
+        return new StraightMovement(speed + Random.Range(-0.5f, 0.5f));
     }
 
     private IEnumerator SpawnMosquitoAfterDelay(Vector3 spawnPosition, float speed, float delay)
@@ -105,9 +113,7 @@ public class InsectSpawner : MonoBehaviour
             mosquitoObj.transform.position = spawnPosition;
             mosquitoObj.SetActive(true);
 
-            // El mosquito que aparece después de la mariposa siempre va recto
             IMovementStrategy straightStrategy = new StraightMovement(speed);
-
             InsectController insect = mosquitoObj.GetComponent<InsectController>();
             insect.Initialize(InsectType.Mosquito, straightStrategy);
         }
@@ -138,7 +144,6 @@ public class InsectSpawner : MonoBehaviour
             return targetPool.Dequeue();
         }
 
-        // Si no hay objetos en el pool, crear uno nuevo
         GameObject prefab = type == InsectType.Mosquito ? mosquitoPrefab : butterflyPrefab;
         GameObject newInsect = Instantiate(prefab);
         int layerValue = type == InsectType.Mosquito ?

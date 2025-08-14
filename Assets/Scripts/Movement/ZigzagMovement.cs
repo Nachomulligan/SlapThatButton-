@@ -8,7 +8,7 @@ public class ZigzagMovement : IMovementStrategy
 
     private float timeElapsed;
 
-    public ZigzagMovement(float speed, float amplitude = 2f, float frequency = 2f)
+    public ZigzagMovement(float speed, float amplitude = 0.2f, float frequency = 0.2f)
     {
         this.speed = speed;
         this.amplitude = amplitude;
@@ -19,11 +19,8 @@ public class ZigzagMovement : IMovementStrategy
     public void Move(InsectController insect, Rigidbody2D rb)
     {
         timeElapsed += Time.deltaTime;
-
-        float verticalOffset = Mathf.Sin(timeElapsed * frequency) * amplitude;
-        Vector2 direction = new Vector2(1f, verticalOffset).normalized;
-
-        rb.linearVelocity = direction * speed;
+        float verticalSpeed = Mathf.Sin(timeElapsed * frequency) * amplitude;
+        rb.linearVelocity = new Vector2(speed, verticalSpeed);
     }
 
     public void Reset()

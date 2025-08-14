@@ -1,62 +1,35 @@
 ﻿using UnityEngine;
 
-
 public class InsectController : MonoBehaviour
 {
-    private InsectType insectType;
-    private float speed;
-    private bool hasBeenHit = false;
-    private Rigidbody2D rb;
+    [Header("Debug Info")]
+    [SerializeField] private InsectType insectType;
+    [SerializeField] private bool hasBeenHit = false;
 
-    // Nuevo: control de patrón
-    private bool usePauseMovement = false;
-    private float walkDuration = 1f;
-    private float pauseDuration = 0.5f;
-    private float patternTimer = 0f;
-    private bool isWalking = true;
+    private Rigidbody2D rb;
+    private IMovementStrategy movementStrategy;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
     }
 
-    public void Initialize(InsectType type, float moveSpeed, bool walkPausePattern = false, float walkTime = 1f, float pauseTime = 0.5f)
+    public void Initialize(InsectType type, IMovementStrategy strategy)
     {
         insectType = type;
-        speed = moveSpeed;
         hasBeenHit = false;
+        movementStrategy = strategy;
 
-        usePauseMovement = walkPausePattern;
-        walkDuration = walkTime;
-        pauseDuration = pauseTime;
-
-        rb.linearVelocity = Vector2.right * speed;
+        // Resetear la estrategia de movimiento al inicializar
+        movementStrategy?.Reset();
     }
 
     private void Update()
     {
-        if (usePauseMovement && !hasBeenHit)
+        // Solo manejar movimiento si no ha sido golpeado y tiene estrategia
+        if (!hasBeenHit && movementStrategy != null)
         {
-            patternTimer += Time.deltaTime;
-
-            if (isWalking)
-            {
-                if (patternTimer >= walkDuration)
-                {
-                    isWalking = false;
-                    patternTimer = 0f;
-                    rb.linearVelocity = Vector2.zero; // parar
-                }
-            }
-            else
-            {
-                if (patternTimer >= pauseDuration)
-                {
-                    isWalking = true;
-                    patternTimer = 0f;
-                    rb.linearVelocity = Vector2.right * speed; // volver a caminar
-                }
-            }
+            movementStrategy.Move(this, rb);
         }
     }
 
@@ -77,6 +50,8 @@ public class InsectController : MonoBehaviour
 
     public void HandleHit()
     {
+        StopMovement();
+
         if (insectType == InsectType.Mosquito)
         {
             GameManager.Instance.OnMosquitoHit();
@@ -95,21 +70,39 @@ public class InsectController : MonoBehaviour
         {
             GameManager.Instance.OnMosquitoMissed();
         }
+
         ReturnToPool();
+    }
+
+    private void StopMovement()
+    {
+        rb.linearVelocity = Vector2.zero;
+        rb.angularVelocity = 0f;
     }
 
     private void ReturnToPool()
     {
-        rb.linearVelocity = Vector2.zero;
+        StopMovement();
         GameManager.Instance.insectSpawner.ReturnToPool(gameObject, insectType);
     }
 
     private void OnBecameInvisible()
     {
-        if (!hasBeenHit && insectType == InsectType.Mosquito && gameObject.activeInHierarchy)
+        // Solo procesar si está activo, no ha sido golpeado y es un mosquito
+        if (gameObject.activeInHierarchy && !hasBeenHit && insectType == InsectType.Mosquito)
         {
             GameManager.Instance.OnMosquitoMissed();
             ReturnToPool();
         }
+    }
+
+    // Métodos públicos para acceso desde las estrategias si necesitan información del insecto
+    public InsectType GetInsectType() => insectType;
+    public bool HasBeenHit() => hasBeenHit;
+
+    // Para debugging
+    public string GetCurrentMovementStrategy()
+    {
+        return movementStrategy?.GetType().Name ?? "No Strategy";
     }
 }

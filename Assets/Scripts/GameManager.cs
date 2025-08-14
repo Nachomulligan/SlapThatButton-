@@ -14,6 +14,8 @@ public class GameManager : MonoBehaviour
     [Header("UI References")]
     public TextMeshProUGUI levelText;
     public TextMeshProUGUI messageText;
+    public TextMeshProUGUI tutorialTitle;       // 🔹 Nuevo: título del tutorial
+    public TextMeshProUGUI tutorialDescription; // 🔹 Nuevo: descripción del tutorial
 
     [Header("Game Objects")]
     public Transform spawnPoint;
@@ -22,14 +24,15 @@ public class GameManager : MonoBehaviour
     public InsectSpawner insectSpawner;
 
     private int currentLevel = 1;
-    private bool lastLevelWon = false; 
-    private GameState currentState = GameState.WaitingToStart;
+    private bool lastLevelWon = false;
+    private GameState currentState = GameState.TutorialStart;
 
     public enum GameState
     {
-        WaitingToStart,     // WAITING SPACE TO START LEVEL
-        Playing,            // PLAYING
-        WaitingToContinue   // WAITING SPACE AFTER WIN/LOSE
+        TutorialStart,       // 🔹 Nuevo estado: inicio del tutorial
+        WaitingToStart,
+        Playing,
+        WaitingToContinue
     }
 
     public System.Action<int> OnLevelChanged;
@@ -50,7 +53,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        UpdateUI();
+        EnterTutorial();
     }
 
     private void Update()
@@ -65,6 +68,10 @@ public class GameManager : MonoBehaviour
     {
         switch (currentState)
         {
+            case GameState.TutorialStart:
+                ExitTutorial();
+                break;
+
             case GameState.WaitingToStart:
                 StartLevel();
                 break;
@@ -77,6 +84,39 @@ public class GameManager : MonoBehaviour
                 ProcessContinue();
                 break;
         }
+    }
+
+    // 🔹 Mostrar solo el tutorial
+    private void EnterTutorial()
+    {
+        // Ocultar gameplay
+        levelText.gameObject.SetActive(false);
+        messageText.gameObject.SetActive(false);
+        handController.gameObject.SetActive(false);
+
+        // Mostrar textos tutorial
+        tutorialTitle.gameObject.SetActive(true);
+        tutorialDescription.gameObject.SetActive(true);
+
+        currentState = GameState.TutorialStart;
+    }
+
+    // 🔹 Salir del tutorial y activar todo lo demás
+    private void ExitTutorial()
+    {
+        // Ocultar tutorial
+        tutorialTitle.gameObject.SetActive(false);
+        tutorialDescription.gameObject.SetActive(false);
+
+        // Mostrar gameplay
+        levelText.gameObject.SetActive(true);
+        messageText.gameObject.SetActive(true);
+        handController.gameObject.SetActive(true);
+
+        // Pasar al estado normal de espera
+        currentState = GameState.WaitingToStart;
+        UpdateUI();
+        OnGameStateChanged?.Invoke(currentState);
     }
 
     private void StartLevel()
@@ -100,8 +140,6 @@ public class GameManager : MonoBehaviour
                 messageText.text = "GAME COMPLETED!\nSPACE TO START";
             }
         }
-        // IF LOSE, DONT CHANGE LEVEL
-
         currentState = GameState.WaitingToStart;
         messageText.text = "SPACE TO START";
         messageText.gameObject.SetActive(true);
@@ -114,7 +152,6 @@ public class GameManager : MonoBehaviour
     {
         currentState = GameState.WaitingToContinue;
         lastLevelWon = true;
-
         messageText.text = $"LEVEL {currentLevel} COMPLETED!\nSPACE TO CONTINUE";
         messageText.gameObject.SetActive(true);
     }
@@ -123,7 +160,6 @@ public class GameManager : MonoBehaviour
     {
         currentState = GameState.WaitingToContinue;
         lastLevelWon = false;
-
         messageText.text = "LOSE!\nSPACE TO RETRY";
         messageText.gameObject.SetActive(true);
         currentLevel = 1;
@@ -133,7 +169,6 @@ public class GameManager : MonoBehaviour
     {
         currentState = GameState.WaitingToContinue;
         lastLevelWon = false;
-
         messageText.text = "LOSE!\nSPACE TO RETRY";
         messageText.gameObject.SetActive(true);
         currentLevel = 1;

@@ -8,6 +8,7 @@ public class InsectController : MonoBehaviour
 
     private Rigidbody2D rb;
     private IMovementStrategy movementStrategy;
+    public AudioSource Squash;
 
     private void Awake()
     {
@@ -19,14 +20,11 @@ public class InsectController : MonoBehaviour
         insectType = type;
         hasBeenHit = false;
         movementStrategy = strategy;
-
-        // Resetear la estrategia de movimiento al inicializar
         movementStrategy?.Reset();
     }
 
     private void Update()
     {
-        // Solo manejar movimiento si no ha sido golpeado y tiene estrategia
         if (!hasBeenHit && movementStrategy != null)
         {
             movementStrategy.Move(this, rb);
@@ -55,10 +53,15 @@ public class InsectController : MonoBehaviour
         if (insectType == InsectType.Mosquito)
         {
             GameManager.Instance.OnMosquitoHit();
+            Squash.Play();
         }
         else
         {
             GameManager.Instance.OnButterflyHit();
+            Squash.Play();
+
+            //Cancelar mosquito pendiente de esta mariposa
+            GameManager.Instance.insectSpawner.CancelButterflyMosquitoSpawn(gameObject);
         }
 
         ReturnToPool();
@@ -88,7 +91,6 @@ public class InsectController : MonoBehaviour
 
     private void OnBecameInvisible()
     {
-        // Solo procesar si está activo, no ha sido golpeado y es un mosquito
         if (gameObject.activeInHierarchy && !hasBeenHit && insectType == InsectType.Mosquito)
         {
             GameManager.Instance.OnMosquitoMissed();
@@ -96,11 +98,9 @@ public class InsectController : MonoBehaviour
         }
     }
 
-    // Métodos públicos para acceso desde las estrategias si necesitan información del insecto
     public InsectType GetInsectType() => insectType;
     public bool HasBeenHit() => hasBeenHit;
 
-    // Para debugging
     public string GetCurrentMovementStrategy()
     {
         return movementStrategy?.GetType().Name ?? "No Strategy";

@@ -5,6 +5,7 @@ public class HandController : MonoBehaviour
     [Header("Animation Settings")]
     public float slapDuration = 0.3f;
     public float slapDistance = 2f;
+   
 
     [Header("Layer Detection")]
     public LayerMask mosquitoLayer = 8;
@@ -13,6 +14,7 @@ public class HandController : MonoBehaviour
     private Vector3 initialPosition;
     private bool isSlapping = false;
     private CircleCollider2D handCollider;
+    public AudioSource Ribbit;
 
     // HAND SATES
     private IHandState currentState;
@@ -68,6 +70,7 @@ public class HandController : MonoBehaviour
     {
         if (!isSlapping)
         {
+            Ribbit.Play();
             StartCoroutine(SlapCoroutine());
         }
     }

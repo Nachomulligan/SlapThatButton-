@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -16,6 +17,8 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI messageText;
     public TextMeshProUGUI tutorialTitle;       // 🔹 Nuevo: título del tutorial
     public TextMeshProUGUI tutorialDescription; // 🔹 Nuevo: descripción del tutorial
+    public Image trunk1;
+    public Image trunk2;
 
     [Header("Game Objects")]
     public Transform spawnPoint;
@@ -40,6 +43,7 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
+
         if (Instance == null)
         {
             Instance = this;

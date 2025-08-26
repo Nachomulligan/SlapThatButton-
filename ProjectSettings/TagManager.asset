@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Hand
   - EndZone
+  - Enemy
   layers:
   - Default
   - TransparentFX

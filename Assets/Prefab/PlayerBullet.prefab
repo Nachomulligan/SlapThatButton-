@@ -102,9 +102,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26f9870811af9ea47b44662e9a16d9f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  explosionRadius: 0.92
-  explosionForce: 5
-  damage: 20
   lifeTime: 5
 --- !u!50 &7632448289800265369
 Rigidbody2D:

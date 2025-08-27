@@ -2,11 +2,8 @@ using UnityEngine;
 
 public class ExplosiveProjectile : MonoBehaviour
 {
-    [Header("Explosion Settings")]
-    [SerializeField] private float explosionRadius = 2f;
-    [SerializeField] private float explosionForce = 5f;
-    [SerializeField] private float damage = 20f;
-    [SerializeField] private float lifeTime = 5f; 
+    [Header("Projectile Settings")]
+    [SerializeField] private float lifeTime = 5f;
 
     private float timer;
     private ObjectPool pool;
@@ -32,32 +29,22 @@ public class ExplosiveProjectile : MonoBehaviour
         timer -= Time.deltaTime;
         if (timer <= 0f)
         {
-            Explode();
+            DisableProjectile();
         }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Explode();
+        if (collision.collider.CompareTag("Enemy"))
+        {
+            Destroy(collision.gameObject); // Mata al enemigo instantáneamente
+        }
+
+        DisableProjectile(); // La bala se destruye/recicla al chocar
     }
 
-    private void Explode()
+    private void DisableProjectile()
     {
-        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, explosionRadius);
-
-        foreach (Collider2D hit in hits)
-        {
-            if (hit.CompareTag("Enemy"))
-            {
-                Debug.Log($"Damage {damage} to enemy: {hit.name}");
-            }
-            Rigidbody2D hitRb = hit.attachedRigidbody;
-            if (hitRb != null)
-            {
-                Vector2 dir = (hitRb.position - (Vector2)transform.position).normalized;
-                hitRb.AddForce(dir * explosionForce, ForceMode2D.Impulse);
-            }
-        }
         rb.linearVelocity = Vector2.zero;
         rb.angularVelocity = 0f;
 
@@ -65,11 +52,5 @@ public class ExplosiveProjectile : MonoBehaviour
             pool.ReturnObject(gameObject);
         else
             gameObject.SetActive(false);
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, explosionRadius);
     }
 }

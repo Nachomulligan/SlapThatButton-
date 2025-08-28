@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ObjectPool : MonoBehaviour
+public class ObjectPoolMaxi : MonoBehaviour
 {
     [SerializeField] private GameObject prefab;
     [SerializeField] private int poolSize = 10;

@@ -7,6 +7,7 @@ TagManager:
   - Hand
   - EndZone
   - Enemy
+  - Projectile
   layers:
   - Default
   - TransparentFX

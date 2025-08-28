@@ -144,7 +144,14 @@ public class PlayerController : MonoBehaviour
     {
         Debug.Log("Secondary Action (Right Click)");
     }
+    public void Die()
+    {
+        // Disparar evento de muerte
+        GameManager.OnPlayerDeath?.Invoke();
 
+        // Desactivar controles o destruir player
+        gameObject.SetActive(false);
+    }
     private void OnDrawGizmos()
     {
         if (!debugMode) return;

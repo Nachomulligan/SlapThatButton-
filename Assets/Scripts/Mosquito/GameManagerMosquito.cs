@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using TMPro;
 
-public class GameManager : MonoBehaviour
+public class GameManagerMosquito : MonoBehaviour
 {
-    public static GameManager Instance { get; private set; }
+    public static GameManagerMosquito Instance { get; private set; }
 
     [Header("Game Settings")]
     public float baseSpeed = 3f;

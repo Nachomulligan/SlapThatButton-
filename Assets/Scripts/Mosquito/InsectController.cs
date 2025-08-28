@@ -52,16 +52,16 @@ public class InsectController : MonoBehaviour
 
         if (insectType == InsectType.Mosquito)
         {
-            GameManager.Instance.OnMosquitoHit();
+            GameManagerMosquito.Instance.OnMosquitoHit();
             Squash.Play();
         }
         else
         {
-            GameManager.Instance.OnButterflyHit();
+            GameManagerMosquito.Instance.OnButterflyHit();
             Squash.Play();
 
             //Cancelar mosquito pendiente de esta mariposa
-            GameManager.Instance.insectSpawner.CancelButterflyMosquitoSpawn(gameObject);
+            GameManagerMosquito.Instance.insectSpawner.CancelButterflyMosquitoSpawn(gameObject);
         }
 
         ReturnToPool();
@@ -71,7 +71,7 @@ public class InsectController : MonoBehaviour
     {
         if (insectType == InsectType.Mosquito)
         {
-            GameManager.Instance.OnMosquitoMissed();
+            GameManagerMosquito.Instance.OnMosquitoMissed();
         }
 
         ReturnToPool();
@@ -86,14 +86,14 @@ public class InsectController : MonoBehaviour
     private void ReturnToPool()
     {
         StopMovement();
-        GameManager.Instance.insectSpawner.ReturnToPool(gameObject, insectType);
+        GameManagerMosquito.Instance.insectSpawner.ReturnToPool(gameObject, insectType);
     }
 
     private void OnBecameInvisible()
     {
         if (gameObject.activeInHierarchy && !hasBeenHit && insectType == InsectType.Mosquito)
         {
-            GameManager.Instance.OnMosquitoMissed();
+            GameManagerMosquito.Instance.OnMosquitoMissed();
             ReturnToPool();
         }
     }

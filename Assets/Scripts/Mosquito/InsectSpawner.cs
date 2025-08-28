@@ -166,7 +166,7 @@ public class InsectSpawner : MonoBehaviour
             return InsectType.Mosquito;
         }
 
-        if (level >= GameManager.Instance.butterflyStartLevel && Random.Range(0f, 1f) < 0.3f)
+        if (level >= GameManagerMosquito.Instance.butterflyStartLevel && Random.Range(0f, 1f) < 0.3f)
         {
             return InsectType.Butterfly;
         }

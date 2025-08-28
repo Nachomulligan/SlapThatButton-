@@ -13,7 +13,7 @@ public class PlayerCannonController : MonoBehaviour
     [SerializeField] private KeyCode shootKey = KeyCode.Space;         
 
     [Header("Shooting")]
-    [SerializeField] private ObjectPool projectilePool;   
+    [SerializeField] private ObjectPoolMaxi projectilePool;   
     [SerializeField] private float projectileSpeed = 15f;
     [SerializeField] private float recoilForce = 10f;
     [SerializeField] private float fireCooldown = 0.5f;

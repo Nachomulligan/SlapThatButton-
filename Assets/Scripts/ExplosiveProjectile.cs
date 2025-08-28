@@ -6,7 +6,7 @@ public class ExplosiveProjectile : MonoBehaviour
     [SerializeField] private float lifeTime = 5f;
 
     private float timer;
-    private ObjectPool pool;
+    private ObjectPoolMaxi pool;
     private Rigidbody2D rb;
 
     private void Awake()
@@ -19,7 +19,7 @@ public class ExplosiveProjectile : MonoBehaviour
         timer = lifeTime;
     }
 
-    public void SetPool(ObjectPool pool)
+    public void SetPool(ObjectPoolMaxi pool)
     {
         this.pool = pool;
     }

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 public class Enemy : MonoBehaviour
 {
@@ -8,6 +9,10 @@ public class Enemy : MonoBehaviour
     private Transform player;
     private ObjectPool parentPool;
     private bool isActive = false;
+    public AudioSource DieSFX;
+
+    [Header("Audio Settings")]
+    [SerializeField] private float audioDelay = 0.3f; // Tiempo para que termine el audio
 
     private void OnEnable()
     {
@@ -58,6 +63,9 @@ public class Enemy : MonoBehaviour
         // Si es golpeado por un proyectil
         if (other.CompareTag("Projectile"))
         {
+            // SOLUCIÓN 1: Delay antes de devolver al pool
+            StartCoroutine(HandleDeath());
+
             GameManager.Instance?.RegisterEnemyKill();
 
             // Devolver proyectil a su pool
@@ -70,9 +78,26 @@ public class Enemy : MonoBehaviour
             {
                 other.gameObject.SetActive(false);
             }
-
-            ReturnToPool();
         }
+    }
+
+    private IEnumerator HandleDeath()
+    {
+        // Detener movimiento inmediatamente
+        isActive = false;
+
+        // Reproducir sonido
+        if (DieSFX != null)
+        {
+            DieSFX.Play();
+            Debug.Log("Playing death sound");
+
+            // Esperar a que termine el sonido (o un tiempo fijo)
+            yield return new WaitForSeconds(audioDelay);
+        }
+
+        // Ahora sí devolver al pool
+        ReturnToPool();
     }
 
     public void SetSpeed(float newSpeed)
@@ -87,7 +112,6 @@ public class Enemy : MonoBehaviour
 
     private void ReturnToPool()
     {
-        isActive = false;
         if (parentPool != null)
         {
             parentPool.ReturnObject(gameObject);

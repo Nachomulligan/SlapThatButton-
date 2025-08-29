@@ -180,7 +180,7 @@ GameObject:
   - component: {fileID: 294134369}
   m_Layer: 0
   m_Name: Walls
-  m_TagString: Enemy
+  m_TagString: walls
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -194,8 +194,8 @@ Transform:
   m_GameObject: {fileID: 294134365}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -2.3, y: -1, z: 0}
+  m_LocalScale: {x: 0.70295715, y: 0.70295715, z: 0.70295715}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1508376019}
@@ -241,8 +241,8 @@ TilemapRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1826899227
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0.012000024, y: 0.012000024, z: 0}
@@ -3817,7 +3817,7 @@ Transform:
   m_GameObject: {fileID: 319455241}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 15.2, y: -50.7, z: 0.014642}
+  m_LocalPosition: {x: 7.5, y: -48.7, z: 0.014642}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4090,8 +4090,8 @@ MonoBehaviour:
   - {fileID: 319455242}
   - {fileID: 1205951914}
   - {fileID: 1069103840}
-  initialSpawnInterval: 2
-  minimumSpawnInterval: 10
+  initialSpawnInterval: 1.2
+  minimumSpawnInterval: 4
   initialEnemySpeed: 2
   maxEnemySpeed: 8
   totalEnemiesThisRound: 0
@@ -4268,7 +4268,7 @@ Transform:
   m_GameObject: {fileID: 1069103839}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -26.5, y: -47.7, z: 0.014642}
+  m_LocalPosition: {x: -19.5, y: -47.8, z: 0.014642}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4473,7 +4473,7 @@ Transform:
   m_GameObject: {fileID: 1205951913}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -5.9, y: -63.5, z: 0.014642}
+  m_LocalPosition: {x: -5.9, y: -57.8, z: 0.014642}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4504,7 +4504,7 @@ Transform:
   m_GameObject: {fileID: 1216669222}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -6.2, y: -35.1, z: 0.014642}
+  m_LocalPosition: {x: -6.2, y: -39.2, z: 0.014642}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5054,8 +5054,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1994720817}
   - {fileID: 294134366}
+  - {fileID: 1994720817}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1597678551

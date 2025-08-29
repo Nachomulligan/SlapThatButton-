@@ -8,6 +8,7 @@ TagManager:
   - EndZone
   - Enemy
   - Projectile
+  - walls
   layers:
   - Default
   - TransparentFX
@@ -47,6 +48,9 @@ TagManager:
     locked: 0
   - name: 1
     uniqueID: 2468068069
+    locked: 0
+  - name: 2
+    uniqueID: 378427279
     locked: 0
   m_RenderingLayers:
   - Default

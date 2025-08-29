@@ -12,6 +12,7 @@ public class EnemySpawner : MonoBehaviour
     [Header("Enemy Configuration")]
     [SerializeField] private float initialEnemySpeed = 2f;
     [SerializeField] private float maxEnemySpeed = 8f;
+    public int totalEnemiesThisRound;
 
     private float currentSpawnInterval;
     private float currentEnemySpeed;
@@ -47,7 +48,10 @@ public class EnemySpawner : MonoBehaviour
             StartCoroutine(SpawnCoroutine());
         }
     }
-
+    public void SetEnemiesToSpawn(int amount)
+    {
+        totalEnemiesThisRound = amount;
+    }
     public void StopSpawning()
     {
         isSpawning = false;

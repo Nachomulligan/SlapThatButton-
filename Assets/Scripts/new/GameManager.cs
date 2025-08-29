@@ -6,20 +6,24 @@ using System.Collections;
 public class GameManager : MonoBehaviour
 {
     [Header("Game Configuration")]
-    [SerializeField] private int enemiesPerSpeedIncrease = 10;
-    [SerializeField] private float speedIncreaseAmount = 0.5f;
-    [SerializeField] private int enemiesPerSpawnIncrease = 15;
-    [SerializeField] private float spawnRateIncrease = 0.2f;
+    [SerializeField] private int baseEnemiesPerRound = 5;
+    [SerializeField] private float roundDelay = 3f; 
+    [SerializeField] private float speedIncreasePerRound = 0.2f;
+    [SerializeField] private float spawnRateIncreasePerRound = 0.1f;
 
     [Header("Scene Management")]
     [SerializeField] private string gameOverSceneName = "GameOverScene";
 
     private int enemiesKilled = 0;
-    private int currentRound = 1;
+    private int currentRound = 0;
+    private int enemiesToKillThisRound = 0;
+    private int enemiesKilledThisRound = 0;
+
     private EnemySpawner enemySpawner;
 
-    // Events
+
     public static UnityEvent<int> OnEnemiesKilledChanged = new UnityEvent<int>();
+    public static UnityEvent<int> OnRoundStarted = new UnityEvent<int>();
     public static UnityEvent OnPlayerDeath = new UnityEvent();
 
     public static GameManager Instance { get; private set; }
@@ -27,9 +31,7 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         if (Instance == null)
-        {
             Instance = this;
-        }
         else
         {
             Destroy(gameObject);
@@ -42,37 +44,36 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         OnPlayerDeath.AddListener(HandlePlayerDeath);
+        StartCoroutine(StartNextRound()); 
     }
 
     public void RegisterEnemyKill()
     {
         enemiesKilled++;
+        enemiesKilledThisRound++;
         OnEnemiesKilledChanged?.Invoke(enemiesKilled);
 
-        CheckForSpeedIncrease();
-        CheckForSpawnIncrease();
-    }
-
-    private void CheckForSpeedIncrease()
-    {
-        if (enemiesKilled % enemiesPerSpeedIncrease == 0)
+        if (enemiesKilledThisRound >= enemiesToKillThisRound)
         {
-            if (enemySpawner != null)
-            {
-                enemySpawner.IncreaseEnemySpeed(speedIncreaseAmount);
-            }
+            StartCoroutine(StartNextRound());
         }
     }
 
-    private void CheckForSpawnIncrease()
+    private IEnumerator StartNextRound()
     {
-        if (enemiesKilled % enemiesPerSpawnIncrease == 0)
+        currentRound++;
+        enemiesKilledThisRound = 0;
+        enemiesToKillThisRound = baseEnemiesPerRound + (currentRound - 1) * 3;
+
+        yield return new WaitForSeconds(roundDelay);
+
+        OnRoundStarted?.Invoke(currentRound);
+
+        if (enemySpawner != null)
         {
-            currentRound++;
-            if (enemySpawner != null)
-            {
-                enemySpawner.DecreaseSpawnInterval(spawnRateIncrease);
-            }
+            enemySpawner.SetEnemiesToSpawn(enemiesToKillThisRound);
+            enemySpawner.IncreaseEnemySpeed(speedIncreasePerRound);
+            enemySpawner.DecreaseSpawnInterval(spawnRateIncreasePerRound);
         }
     }
 
@@ -83,7 +84,7 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator DelayedSceneChange()
     {
-        yield return new WaitForSeconds(1f); // Pequeña pausa antes de cambiar escena
+        yield return new WaitForSeconds(1f);
         SceneManager.LoadScene(gameOverSceneName);
     }
 
